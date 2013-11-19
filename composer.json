@@ -1,0 +1,24 @@
+{
+    "name": "ebussola/job-schedule",
+    "description": "A daemon job schedule",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Leonardo Shinagawa",
+            "email": "leonardo@ebussola.com"
+        }
+    ],
+    "require": {
+        "mtdowling/cron-expression": "v1.0.2",
+        "symfony/process": "v2.3.7",
+        "ebussola/common-pool": "1.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.28"
+    },
+    "autoload" : {
+        "psr-0" : {
+            "ebussola\\job" : "src/"
+        }
+    }
+}
