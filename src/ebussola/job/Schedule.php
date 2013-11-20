@@ -51,7 +51,7 @@ class Schedule {
                 $cmd->status_code = 1;
                 $this->execute($cmd, $runner);
 
-            } else if ($cmd_dep->status_code == 1) {
+            } else if ($this->isRunning($cmd_dep)) {
                 $cmd->status_code = 4;
                 $this->execute($cmd, $runner);
 
@@ -87,8 +87,14 @@ class Schedule {
      * @return bool
      */
     public function isRunning(Command $cmd) {
+        $parent_running = false;
+        if ($cmd->parent_id != null) {
+            $parent_cmd = $this->getDependency($cmd);
+            $parent_running = $this->isRunning($parent_cmd);
+        }
+
         $runner = $this->getJobRunner($cmd);
-        return $runner->isRunning($cmd);
+        return ($runner->isRunning($cmd) || $parent_running);
     }
 
     public function startDaemon() {
