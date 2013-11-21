@@ -11,10 +11,10 @@ namespace ebussola\job;
 
 use ebussola\common\pool\inmemory\PoolAbstract;
 
-class CommandPool extends PoolAbstract {
+class JobPool extends PoolAbstract {
 
     /**
-     * @param Command $object
+     * @param Job $object
      *
      * @return int | string
      */

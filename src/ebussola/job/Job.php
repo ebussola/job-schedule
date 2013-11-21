@@ -19,6 +19,6 @@ namespace ebussola\job;
  * @property int    $parent_id
  * @property string $runner_class
  */
-interface Command {
+interface Job {
 
 } 

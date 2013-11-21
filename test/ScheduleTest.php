@@ -19,22 +19,22 @@ class ScheduleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testGetCommand() {
-        $cmd = $this->schedule->getCommand(1);
+        $cmd = $this->schedule->getJob(1);
 
-        $this->assertInstanceOf('\ebussola\job\Command', $cmd);
+        $this->assertInstanceOf('\ebussola\job\Job', $cmd);
         $this->assertEquals(1, $cmd->id);
 
         // testing pool
         $cmd->status_code = 1;
-        $cmd2 = $this->schedule->getCommand(1);
+        $cmd2 = $this->schedule->getJob(1);
 
-        $this->assertInstanceOf('\ebussola\job\Command', $cmd2);
+        $this->assertInstanceOf('\ebussola\job\Job', $cmd2);
         $this->assertEquals(1, $cmd2->status_code);
         $this->assertEquals($cmd, $cmd2);
     }
 
     public function testIsRunning() {
-        $cmd = $this->schedule->getCommand(1);
+        $cmd = $this->schedule->getJob(1);
         $this->schedule->run($cmd);
 
         $this->assertTrue($this->schedule->isRunning($cmd));
@@ -45,7 +45,7 @@ class ScheduleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testRun() {
-        $cmd = $this->schedule->getCommand(1);
+        $cmd = $this->schedule->getJob(1);
         $this->schedule->run($cmd);
 
         while ($this->schedule->isRunning($cmd)) {
@@ -57,20 +57,20 @@ class ScheduleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testHierarchyError() {
-        $dep_cmd = $this->schedule->getCommand(1);
+        $dep_cmd = $this->schedule->getJob(1);
         $dep_cmd->status_code = 3;
 
-        $cmd = $this->schedule->getCommand(2);
+        $cmd = $this->schedule->getJob(2);
         $this->schedule->run($cmd);
 
         $this->assertEquals(2, $cmd->status_code);
     }
 
     public function testHierarchyRun_1Parent() {
-        $cmd1 = $this->schedule->getCommand(1);
+        $cmd1 = $this->schedule->getJob(1);
         $this->schedule->run($cmd1);
 
-        $cmd2 = $this->schedule->getCommand(2);
+        $cmd2 = $this->schedule->getJob(2);
         $this->schedule->run($cmd2);
 
         $this->assertEquals(1, $cmd1->status_code);
@@ -101,13 +101,13 @@ class ScheduleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testHierarchyRun_2Parents() {
-        $cmd1 = $this->schedule->getCommand(1);
+        $cmd1 = $this->schedule->getJob(1);
         $this->schedule->run($cmd1);
 
-        $cmd2 = $this->schedule->getCommand(2);
+        $cmd2 = $this->schedule->getJob(2);
         $this->schedule->run($cmd2);
 
-        $cmd3 = $this->schedule->getCommand(3);
+        $cmd3 = $this->schedule->getJob(3);
         $this->schedule->run($cmd3);
 
         $this->assertEquals(1, $cmd1->status_code);

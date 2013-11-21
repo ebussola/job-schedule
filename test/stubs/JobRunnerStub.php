@@ -15,11 +15,11 @@ class JobRunnerStub implements \ebussola\job\JobRunner {
     private $waiting = [];
 
     /**
-     * @param \ebussola\job\Command $cmd
+     * @param \ebussola\job\Job $cmd
      *
      * @return mixed
      */
-    public function runIt(\ebussola\job\Command $cmd) {
+    public function runIt(\ebussola\job\Job $cmd) {
         switch ($cmd->status_code) {
             case 1 :
             case 3 :
@@ -34,11 +34,11 @@ class JobRunnerStub implements \ebussola\job\JobRunner {
     }
 
     /**
-     * @param \ebussola\job\Command $cmd
+     * @param \ebussola\job\Job $cmd
      *
      * @return bool
      */
-    public function isRunning(\ebussola\job\Command $cmd) {
+    public function isRunning(\ebussola\job\Job $cmd) {
         if (in_array($cmd, $this->running)) {
             $key = array_search($cmd, $this->running);
             if (time() > $this->running_until[$key]) {

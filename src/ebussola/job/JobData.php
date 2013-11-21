@@ -9,12 +9,12 @@
 namespace ebussola\job;
 
 
-interface CommandData {
+interface JobData {
 
     /**
      * @param int $command_id
      *
-     * @return Command
+     * @return Job
      */
     public function find($command_id);
 

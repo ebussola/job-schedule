@@ -6,10 +6,10 @@
  * Time: 18:39
  */
 
-namespace ebussola\job\command;
+namespace ebussola\job\job;
 
 
-class Command implements \ebussola\job\Command {
+class Job implements \ebussola\job\Job {
 
     /**
      * @var int

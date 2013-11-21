@@ -18,83 +18,83 @@ class Schedule {
     private $runner_pool;
 
     /**
-     * @var CommandPool
+     * @var JobPool
      */
-    private $command_pool;
+    private $job_pool;
 
     /**
-     * @var CommandData
+     * @var JobData
      */
-    private $command_data;
+    private $job_data;
 
     /**
-     * @param CommandData $command_data
+     * @param JobData $job_data
      */
-    public function __construct(CommandData $command_data) {
+    public function __construct(JobData $job_data) {
         $this->runner_pool = new RunnerPool();
-        $this->command_pool = new CommandPool();
-        $this->command_data = $command_data;
+        $this->job_pool = new JobPool();
+        $this->job_data = $job_data;
     }
 
     /**
      * Runs a single command
      *
-     * @param Command $cmd
+     * @param Job $job
      */
-    public function run(Command $cmd) {
-        $runner = $this->getJobRunner($cmd);
+    public function run(Job $job) {
+        $runner = $this->getJobRunner($job);
 
-        if ($this->hasDependency($cmd)) {
-            $cmd_dep = $this->getDependency($cmd);
+        if ($this->hasDependency($job)) {
+            $cmd_dep = $this->getDependency($job);
 
             if ($cmd_dep->exit_code == self::EXIT_CODE_NORMAL && $this->isValid($cmd_dep)) {
-                $cmd->status_code = 1;
-                $this->execute($cmd, $runner);
+                $job->status_code = 1;
+                $this->execute($job, $runner);
 
             } else if ($this->isRunning($cmd_dep)) {
-                $cmd->status_code = 4;
-                $this->execute($cmd, $runner);
+                $job->status_code = 4;
+                $this->execute($job, $runner);
 
             } else {
-                $cmd->status_code = 2;
+                $job->status_code = 2;
 
             }
         } else {
-            $cmd->status_code = 1;
-            $this->execute($cmd, $runner);
+            $job->status_code = 1;
+            $this->execute($job, $runner);
         }
     }
 
     /**
-     * @param int $command_id
+     * @param int $job_id
      *
-     * @return Command
+     * @return Job
      */
-    public function getCommand($command_id) {
-        if (!$this->command_pool->has($command_id)) {
-            $cmd = $this->command_data->find($command_id);
-            $this->command_pool->add($cmd);
+    public function getJob($job_id) {
+        if (!$this->job_pool->has($job_id)) {
+            $job = $this->job_data->find($job_id);
+            $this->job_pool->add($job);
         }
 
-        $cmd = $this->command_pool->get($command_id);
+        $job = $this->job_pool->get($job_id);
 
-        return $cmd;
+        return $job;
     }
 
     /**
-     * @param Command $cmd
+     * @param Job $job
      *
      * @return bool
      */
-    public function isRunning(Command $cmd) {
+    public function isRunning(Job $job) {
         $parent_running = false;
-        if ($cmd->parent_id != null) {
-            $parent_cmd = $this->getDependency($cmd);
-            $parent_running = $this->isRunning($parent_cmd);
+        if ($job->parent_id != null) {
+            $parent_job = $this->getDependency($job);
+            $parent_running = $this->isRunning($parent_job);
         }
 
-        $runner = $this->getJobRunner($cmd);
-        return ($runner->isRunning($cmd) || $parent_running);
+        $runner = $this->getJobRunner($job);
+        return ($runner->isRunning($job) || $parent_running);
     }
 
     public function startDaemon() {
@@ -102,53 +102,53 @@ class Schedule {
     }
 
     /**
-     * @param Command $cmd
+     * @param Job $job
      *
      * @return bool
      */
-    private function isValid(Command $cmd) {
-        return ($cmd->status_code == 0) && ($cmd->expires_on > time());
+    private function isValid(Job $job) {
+        return ($job->status_code == 0) && ($job->expires_on > time());
     }
 
     /**
      * Just run the job
      *
-     * @param Command   $cmd
+     * @param Job   $job
      * @param JobRunner $runner
      */
-    private function execute(Command $cmd, JobRunner $runner) {
-        $runner->runIt($cmd);
+    private function execute(Job $job, JobRunner $runner) {
+        $runner->runIt($job);
     }
 
     /**
-     * @param Command $cmd
+     * @param Job $job
      *
      * @return bool
      */
-    private function hasDependency(Command $cmd) {
-        return $cmd->parent_id != null;
+    private function hasDependency(Job $job) {
+        return $job->parent_id != null;
     }
 
     /**
-     * @param Command $cmd
+     * @param Job $job
      *
-     * @return Command
+     * @return Job
      */
-    private function getDependency(Command $cmd) {
-        return $this->getCommand($cmd->parent_id);
+    private function getDependency(Job $job) {
+        return $this->getJob($job->parent_id);
     }
 
     /**
-     * @param Command $cmd
+     * @param Job $job
      *
      * @return JobRunner
      */
-    private function getJobRunner(Command $cmd) {
-        if (!$this->runner_pool->has($cmd->runner_class)) {
-            $runner = new $cmd->runner_class();
+    private function getJobRunner(Job $job) {
+        if (!$this->runner_pool->has($job->runner_class)) {
+            $runner = new $job->runner_class();
             $this->runner_pool->add($runner);
         }
-        $runner = $this->runner_pool->get($cmd->runner_class);
+        $runner = $this->runner_pool->get($job->runner_class);
 
         return $runner;
     }

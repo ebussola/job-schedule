@@ -12,17 +12,17 @@ namespace ebussola\job;
 interface JobRunner {
 
     /**
-     * @param Command $cmd
+     * @param Job $cmd
      *
      * @return mixed
      */
-    public function runIt(Command $cmd);
+    public function runIt(Job $cmd);
 
     /**
-     * @param Command $cmd
+     * @param Job $cmd
      *
      * @return bool
      */
-    public function isRunning(Command $cmd);
+    public function isRunning(Job $cmd);
 
 } 
