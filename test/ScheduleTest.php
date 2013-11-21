@@ -41,14 +41,34 @@ class ScheduleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testIsRunning() {
-        $cmd = $this->schedule->getJob(1);
-        $this->schedule->run($cmd);
+        $job = $this->schedule->getJob(1);
+        $job2 = $this->schedule->getJob(2);
 
-        $this->assertTrue($this->schedule->isRunning($cmd));
+        $this->schedule->run($job);
+
+        $this->assertTrue($this->schedule->isRunning($job));
+        $this->assertFalse($this->schedule->isRunning($job2));
 
         sleep(6);
 
-        $this->assertFalse($this->schedule->isRunning($cmd));
+        $this->assertFalse($this->schedule->isRunning($job));
+        $this->assertFalse($this->schedule->isRunning($job2));
+    }
+
+    public function testIsWaiting() {
+        $job = $this->schedule->getJob(1);
+        $job2 = $this->schedule->getJob(2);
+
+        $this->schedule->run($job);
+        $this->schedule->run($job2);
+
+        $this->assertTrue($this->schedule->isRunning($job));
+        $this->assertTrue($this->schedule->isWaiting($job2));
+
+        sleep(6);
+
+        $this->assertFalse($this->schedule->isRunning($job));
+        $this->assertFalse($this->schedule->isWaiting($job2));
     }
 
     public function testRun() {
@@ -87,6 +107,7 @@ class ScheduleTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $cmd2->exit_code);
 
         while ($this->schedule->isRunning($cmd1)) {
+            $this->schedule->isRunning($cmd2);
             sleep(1);
         }
 
@@ -127,6 +148,8 @@ class ScheduleTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $cmd3->exit_code);
 
         while ($this->schedule->isRunning($cmd1)) {
+            $this->schedule->isRunning($cmd2);
+            $this->schedule->isRunning($cmd3);
             sleep(1);
         }
 
@@ -140,6 +163,7 @@ class ScheduleTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $cmd3->exit_code);
 
         while ($this->schedule->isRunning($cmd2)) {
+            $this->schedule->isRunning($cmd3);
             sleep(1);
         }
 

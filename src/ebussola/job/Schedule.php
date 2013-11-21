@@ -45,13 +45,13 @@ class Schedule {
         $runner = $this->getJobRunner($job);
 
         if ($this->hasDependency($job)) {
-            $cmd_dep = $this->getDependency($job);
+            $job_dep = $this->getDependency($job);
 
-            if ($cmd_dep->exit_code == self::EXIT_CODE_NORMAL && $this->isValid($cmd_dep)) {
+            if ($job_dep->exit_code == self::EXIT_CODE_NORMAL && $this->isValid($job_dep)) {
                 $job->status_code = 1;
                 $this->execute($job, $runner);
 
-            } else if ($this->isRunning($cmd_dep)) {
+            } else if ($this->isRunning($job_dep) || $this->isWaiting($job)) {
                 $job->status_code = 4;
                 $this->execute($job, $runner);
 
@@ -86,9 +86,7 @@ class Schedule {
      */
     public function getAllJobs() {
         $jobs = $this->job_data->getAll();
-        foreach ($jobs as $job) {
-            $this->job_pool->add($job);
-        }
+        $this->job_pool->addAll($jobs);
 
         return $jobs;
     }
@@ -98,15 +96,27 @@ class Schedule {
      *
      * @return bool
      */
-    public function isRunning(Job $job) {
-        $parent_running = false;
+    public function isWaiting(Job $job) {
+        $parent_waiting = false;
         if ($job->parent_id != null) {
             $parent_job = $this->getDependency($job);
-            $parent_running = $this->isRunning($parent_job);
+            $parent_waiting = $this->isWaiting($parent_job);
         }
 
         $runner = $this->getJobRunner($job);
-        return ($runner->isRunning($job) || $parent_running);
+
+        return ($runner->isWaiting($job) || $parent_waiting);
+    }
+
+    /**
+     * @param Job $job
+     *
+     * @return bool
+     */
+    public function isRunning(Job $job) {
+        $runner = $this->getJobRunner($job);
+
+        return $runner->isRunning($job);
     }
 
     public function startDaemon() {

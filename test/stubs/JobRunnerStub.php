@@ -39,6 +39,26 @@ class JobRunnerStub implements \ebussola\job\JobRunner {
      * @return bool
      */
     public function isRunning(\ebussola\job\Job $cmd) {
+        $this->refreshJobs($cmd);
+
+        return (in_array($cmd, $this->running));
+    }
+
+    /**
+     * @param \ebussola\job\Job $job
+     *
+     * @return bool
+     */
+    public function isWaiting(\ebussola\job\Job $job) {
+        $this->refreshJobs($job);
+
+        return (in_array($job, $this->waiting));
+    }
+
+    /**
+     * @param \ebussola\job\Job $cmd
+     */
+    private function refreshJobs(\ebussola\job\Job $cmd) {
         if (in_array($cmd, $this->running)) {
             $key = array_search($cmd, $this->running);
             if (time() > $this->running_until[$key]) {
@@ -55,8 +75,6 @@ class JobRunnerStub implements \ebussola\job\JobRunner {
                 }
             }
         }
-
-        return (in_array($cmd, $this->running));
     }
 
 }

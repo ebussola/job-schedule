@@ -18,6 +18,8 @@ namespace ebussola\job;
  * @property int    $expires_on
  * @property int    $parent_id
  * @property string $runner_class
+ * @property string $schedule
+ * @property string $command
  */
 interface Job {
 

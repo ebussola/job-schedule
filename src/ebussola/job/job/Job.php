@@ -50,4 +50,14 @@ class Job implements \ebussola\job\Job {
      */
     public $runner_class;
 
-} 
+    /**
+     * @var string
+     */
+    public $schedule;
+
+    /**
+     * @var string
+     */
+    public $command;
+
+}

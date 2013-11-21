@@ -23,6 +23,13 @@ interface JobRunner {
      *
      * @return bool
      */
-    public function isRunning(Job $cmd);
+    public function isRunning(Job $job);
+
+    /**
+     * @param Job $job
+     *
+     * @return bool
+     */
+    public function isWaiting(Job $job);
 
 } 
