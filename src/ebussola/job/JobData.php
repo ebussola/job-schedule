@@ -18,4 +18,9 @@ interface JobData {
      */
     public function find($command_id);
 
+    /**
+     * @return Job[]
+     */
+    public function getAll();
+
 } 

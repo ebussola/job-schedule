@@ -82,6 +82,18 @@ class Schedule {
     }
 
     /**
+     * @return Job[]
+     */
+    public function getAllJobs() {
+        $jobs = $this->job_data->getAll();
+        foreach ($jobs as $job) {
+            $this->job_pool->add($job);
+        }
+
+        return $jobs;
+    }
+
+    /**
      * @param Job $job
      *
      * @return bool
@@ -98,7 +110,9 @@ class Schedule {
     }
 
     public function startDaemon() {
-        // @todo IMPLEMENT THIS
+//        foreach ($this->job_data->getAll() as $job) {
+//            $this->isRunning($job);
+//        }
     }
 
     /**

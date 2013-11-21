@@ -46,4 +46,15 @@ class CommandDataStub implements \ebussola\job\JobData {
         return null;
     }
 
+    /**
+     * @return \ebussola\job\Job[]
+     */
+    public function getAll() {
+        $jobs = array();
+        $jobs[] = $this->find(1);
+        $jobs[] = $this->find(2);
+        $jobs[] = $this->find(3);
+
+        return $jobs;
+    }
 }

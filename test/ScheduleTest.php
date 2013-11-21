@@ -18,19 +18,26 @@ class ScheduleTest extends PHPUnit_Framework_TestCase {
         $this->schedule = new \ebussola\job\Schedule($command_data);
     }
 
-    public function testGetCommand() {
-        $cmd = $this->schedule->getJob(1);
+    public function testGetJob() {
+        $job = $this->schedule->getJob(1);
 
-        $this->assertInstanceOf('\ebussola\job\Job', $cmd);
-        $this->assertEquals(1, $cmd->id);
+        $this->assertInstanceOf('\ebussola\job\Job', $job);
+        $this->assertEquals(1, $job->id);
 
         // testing pool
-        $cmd->status_code = 1;
-        $cmd2 = $this->schedule->getJob(1);
+        $job->status_code = 1;
+        $job2 = $this->schedule->getJob(1);
 
-        $this->assertInstanceOf('\ebussola\job\Job', $cmd2);
-        $this->assertEquals(1, $cmd2->status_code);
-        $this->assertEquals($cmd, $cmd2);
+        $this->assertInstanceOf('\ebussola\job\Job', $job2);
+        $this->assertEquals(1, $job2->status_code);
+        $this->assertEquals($job, $job2);
+    }
+
+    public function testGetAllJobs() {
+        $jobs = $this->schedule->getAllJobs();
+        foreach ($jobs as $job) {
+            $this->assertInstanceOf('\ebussola\job\Job', $job);
+        }
     }
 
     public function testIsRunning() {
