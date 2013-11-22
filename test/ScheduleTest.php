@@ -15,7 +15,7 @@ class ScheduleTest extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $command_data = new CommandDataStub();
-        $this->schedule = new \ebussola\job\Schedule($command_data);
+        $this->schedule = new \ebussola\job\Schedule($command_data, new LoggerStub());
     }
 
     public function testGetJob() {

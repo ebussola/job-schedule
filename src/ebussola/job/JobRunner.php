@@ -12,11 +12,12 @@ namespace ebussola\job;
 interface JobRunner {
 
     /**
-     * @param Job $cmd
+     * @param Job      $cmd
+     * @param callable $callback
      *
      * @return mixed
      */
-    public function runIt(Job $cmd);
+    public function runIt(Job $cmd, $callback);
 
     /**
      * @param Job $cmd

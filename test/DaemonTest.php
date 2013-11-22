@@ -20,7 +20,7 @@ class DaemonTest extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $job_data = new CommandDataStub();
-        $this->schedule = new \ebussola\job\Schedule($job_data);
+        $this->schedule = new \ebussola\job\Schedule($job_data, new LoggerStub());
         $this->daemon = new \ebussola\job\Daemon($this->schedule);
     }
 

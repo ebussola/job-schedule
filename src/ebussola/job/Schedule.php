@@ -8,6 +8,8 @@
 
 namespace ebussola\job;
 
+use Psr\Log\LoggerInterface;
+
 class Schedule {
 
     const EXIT_CODE_NORMAL = 0;
@@ -28,12 +30,18 @@ class Schedule {
     private $job_data;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param JobData $job_data
      */
-    public function __construct(JobData $job_data) {
+    public function __construct(JobData $job_data, LoggerInterface $logger) {
         $this->runner_pool = new RunnerPool();
         $this->job_pool = new JobPool();
         $this->job_data = $job_data;
+        $this->logger = $logger;
     }
 
     /**
@@ -41,27 +49,36 @@ class Schedule {
      *
      * @param Job $job
      */
-    public function run(Job $job) {
+    public function run(Job $job /*, Callable $callback=null*/) {
+        $this->logger->info('Starting Job: '.$job->id.' | '.$job->command);
+        $callback = array($this, 'notifyExecutionEnd');
+
         $runner = $this->getJobRunner($job);
 
         if ($this->hasDependency($job)) {
             $job_dep = $this->getDependency($job);
 
             if ($job_dep->exit_code == self::EXIT_CODE_NORMAL && $this->isValid($job_dep)) {
+                $this->logger->info('Job has dependency and his dependency is OK | dependency: '.$job_dep->id . ' | '.$job_dep->command);
+
                 $job->status_code = 1;
-                $this->execute($job, $runner);
+                $this->execute($job, $runner, $callback);
 
             } else if ($this->isRunning($job_dep) || $this->isWaiting($job)) {
+                $this->logger->info('Job has dependency and his dependency is working | dependency: '.$job_dep->id . ' | '.$job_dep->command);
+
                 $job->status_code = 4;
-                $this->execute($job, $runner);
+                $this->execute($job, $runner, $callback);
 
             } else {
+                $this->logger->error('Job has dependency and his dependency get some error, aborting | dependency: '.$job_dep->id . ' | '.$job_dep->command);
+
                 $job->status_code = 2;
 
             }
         } else {
             $job->status_code = 1;
-            $this->execute($job, $runner);
+            $this->execute($job, $runner, $callback);
         }
     }
 
@@ -127,6 +144,13 @@ class Schedule {
 
     /**
      * @param Job $job
+     */
+    public function notifyExecutionEnd(Job $job) {
+        $this->logger->info('Job ended: '.$job->id );
+    }
+
+    /**
+     * @param Job $job
      *
      * @return bool
      */
@@ -140,8 +164,8 @@ class Schedule {
      * @param Job   $job
      * @param JobRunner $runner
      */
-    private function execute(Job $job, JobRunner $runner) {
-        $runner->runIt($job);
+    private function execute(Job $job, JobRunner $runner, $callback) {
+        $runner->runIt($job, $callback);
     }
 
     /**

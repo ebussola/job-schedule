@@ -12,19 +12,23 @@ class JobRunnerStub implements \ebussola\job\JobRunner {
 
     private $running_until = [];
 
+    private $running_callbacks = [];
+
     private $waiting = [];
 
     /**
      * @param \ebussola\job\Job $cmd
+     * @param callable          $callback
      *
      * @return mixed
      */
-    public function runIt(\ebussola\job\Job $cmd) {
+    public function runIt(\ebussola\job\Job $cmd, $callback) {
         switch ($cmd->status_code) {
             case 1 :
             case 3 :
                 $this->running[] = $cmd;
                 $this->running_until[] = strtotime('+' . rand(1, 5) . ' seconds');
+                $this->running_callbacks[] = $callback;
                 break;
 
             case 4 :
@@ -66,11 +70,13 @@ class JobRunnerStub implements \ebussola\job\JobRunner {
                 unset($this->running_until[$key]);
                 $cmd->status_code = 0;
 
+                call_user_func($this->running_callbacks[$key], $cmd);
+
                 foreach ($this->waiting as $w_key => $cmd_waiting) {
                     if ($cmd_waiting->parent_id == $cmd->id) {
                         unset($this->waiting[$w_key]);
                         $cmd_waiting->status_code = 1;
-                        $this->runIt($cmd_waiting);
+                        $this->runIt($cmd_waiting, $this->running_callbacks[$w_key]);
                     }
                 }
             }

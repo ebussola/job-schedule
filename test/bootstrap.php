@@ -10,3 +10,4 @@ require __DIR__ . '/../vendor/autoload.php';
 
 require __DIR__ . '/stubs/CommandDataStub.php';
 require __DIR__ . '/stubs/JobRunnerStub.php';
+require __DIR__ . '/stubs/LoggerStub.php';
