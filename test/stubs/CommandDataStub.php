@@ -52,6 +52,15 @@ class CommandDataStub implements \ebussola\job\JobData {
                 $cmd->schedule = '@daily';
                 $cmd->command = '?';
                 break;
+
+            case 5 :
+                $cmd = new \ebussola\job\job\Job();
+                $cmd->id = 5;
+                $cmd->expires_on = strtotime('+1 hour');
+                $cmd->runner_class = '\\JobRunnerStub';
+                $cmd->schedule = '@daily';
+                $cmd->command = '?';
+                break;
         }
 
         if (isset($cmd)) {
@@ -70,6 +79,7 @@ class CommandDataStub implements \ebussola\job\JobData {
         $jobs[] = $this->find(2);
         $jobs[] = $this->find(3);
         $jobs[] = $this->find(4);
+        $jobs[] = $this->find(5);
 
         return $jobs;
     }

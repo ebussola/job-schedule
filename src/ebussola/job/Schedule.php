@@ -90,6 +90,10 @@ class Schedule {
     public function getJob($job_id) {
         if (!$this->job_pool->has($job_id)) {
             $job = $this->job_data->find($job_id);
+
+            // bugfix - class can\'t start with backslash
+            $job->runner_class = trim($job->runner_class, '\\');
+
             $this->job_pool->add($job);
         }
 
@@ -103,6 +107,12 @@ class Schedule {
      */
     public function getAllJobs() {
         $jobs = $this->job_data->getAll();
+
+        // bugfix - class can\'t start with backslash
+        foreach ($jobs as $job) {
+            $job->runner_class = trim($job->runner_class, '\\');
+        }
+
         $this->job_pool->addAll($jobs);
 
         return $jobs;

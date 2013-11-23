@@ -190,4 +190,14 @@ class ScheduleTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $cmd3->exit_code);
     }
 
+    public function testBug_runner_class_starting_with_slash() {
+        // bug runner_class starting with \
+        $job = $this->schedule->getJob(5);
+        $this->schedule->run($job);
+
+        foreach ($this->schedule->getAllJobs() as $job) {
+            $this->schedule->run($job);
+        }
+    }
+
 }
