@@ -47,6 +47,7 @@ class Daemon {
         while (true) {
 
             $this->startDueJobs();
+            sleep(1);
 
             while (date('s') != 00) {
                 $this->refreshJobs();

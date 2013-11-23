@@ -136,12 +136,6 @@ class Schedule {
         return $runner->isRunning($job);
     }
 
-    public function startDaemon() {
-//        foreach ($this->job_data->getAll() as $job) {
-//            $this->isRunning($job);
-//        }
-    }
-
     /**
      * @param Job $job
      */
