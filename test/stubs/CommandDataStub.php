@@ -8,6 +8,8 @@
 
 class CommandDataStub implements \ebussola\job\JobData {
 
+    private $get_all_times_executed = 0;
+
     /**
      * @param int $command_id
      *
@@ -61,6 +63,15 @@ class CommandDataStub implements \ebussola\job\JobData {
                 $cmd->schedule = '@daily';
                 $cmd->command = '?';
                 break;
+
+            case 6 :
+                $cmd = new \ebussola\job\job\Job();
+                $cmd->id = 6;
+                $cmd->expires_on = strtotime('+1 hour');
+                $cmd->runner_class = '\\JobRunnerStub';
+                $cmd->schedule = '@daily';
+                $cmd->command = '?';
+                break;
         }
 
         if (isset($cmd)) {
@@ -80,6 +91,19 @@ class CommandDataStub implements \ebussola\job\JobData {
         $jobs[] = $this->find(3);
         $jobs[] = $this->find(4);
         $jobs[] = $this->find(5);
+
+        switch ($this->get_all_times_executed) {
+            case 1 :
+                $jobs[] = $this->find(6);
+                break;
+            case 2 :
+                $jobs[] = $this->find(6);
+                unset($jobs[0]);
+                unset($jobs[1]);
+                break;
+        }
+
+        $this->get_all_times_executed++;
 
         return $jobs;
     }

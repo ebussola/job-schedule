@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Leonardo
+ * Date: 23/11/13
+ * Time: 11:39
+ */
+
+require __DIR__ . '/../vendor/autoload.php';
+
+$cli = new \Symfony\Component\Console\Application();
+$cli->addCommands(array(
+    new \ebussola\job\console\RefreshJobsCommand(),
+    new \ebussola\job\console\ListJobsCommand()
+));
+
+$cli->run();
