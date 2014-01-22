@@ -74,6 +74,7 @@ class Daemon {
         $zmq_context = new \ZMQContext();
         $this->zmq_socket = $zmq_context->getSocket(\ZMQ::SOCKET_REP);
         $this->zmq_socket->bind('ipc:///tmp/ebussola-job-schedule.ipc');
+        chmod('/tmp/ebussola-job-schedule.ipc', 0777);
     }
 
     private function checkForExternalCommand() {

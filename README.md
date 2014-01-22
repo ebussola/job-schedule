@@ -18,3 +18,5 @@ Test
 To run the ExternalControllerCommandTest, you need to start the test daemon, just run test/start-daemon.php
 
 It will open a daemon with stubs classes simulating some functionalities.
+
+A test is not automaticaly testable, the ipc file must be 777 to be accessible for all users.
